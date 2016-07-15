@@ -1,0 +1,10 @@
+[Unit]
+Description=Cantal Monitoring Service
+
+[Service]
+Type=simple
+Environment="RUST_LOG=warn"
+ExecStart=/usr/bin/cantal-agent --host 0.0.0.0 --port 22682 --storage-dir /var/lib/cantal
+
+[Install]
+WantedBy=multi-user.target
