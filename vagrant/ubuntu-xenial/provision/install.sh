@@ -1,13 +1,13 @@
 #!/bin/sh -ex
 PROVISION_DIR=/vagrant/provision
 
-echo "deb [trusted=yes] http://repo.mglawica.org xenial cantal-stable" \
+echo "deb [trusted=yes] http://repo.mglawica.org/ubuntu/ xenial cantal-stable" \
 | tee /etc/apt/sources.list.d/cantal.list
 
-echo "deb [trusted=yes] http://repo.mglawica.org xenial verwalter-stable" \
+echo "deb [trusted=yes] http://repo.mglawica.org/ubuntu/ xenial verwalter-stable" \
 | tee /etc/apt/sources.list.d/verwalter.list
 
-echo "deb [trusted=yes] http://repo.mglawica.org xenial lithos-stable" \
+echo "deb [trusted=yes] http://repo.mglawica.org/ubuntu/ xenial lithos-stable" \
 | tee /etc/apt/sources.list.d/lithos.list
 
 apt-get update
