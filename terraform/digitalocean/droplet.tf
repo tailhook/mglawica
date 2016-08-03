@@ -53,7 +53,6 @@ resource "digitalocean_droplet" "main" {
             "mkdir /etc/verwalter/sandbox",
             "mkdir /etc/verwalter/scheduler",
             "mkdir /etc/verwalter/templates",
-            "mkdir /etc/verwalter/templates/simple",
             "mkdir /etc/verwalter/frontend",
 
             "mkdir /etc/nginx/verwalter-configs",
@@ -87,6 +86,12 @@ resource "digitalocean_droplet" "main" {
     }
 
     provisioner "file" {
+        source = "provision/sudoers.txt"
+        destination = "/etc/sudoers.d/verwalter"
+    }
+
+
+    provisioner "file" {
         source = "provision/verwalter.sandbox.yaml"
         destination = "/etc/verwalter/sandbox/log.yaml"
     }
@@ -103,7 +108,7 @@ resource "digitalocean_droplet" "main" {
 
     provisioner "file" {
         source = "provision/templates"
-        destination = "/etc/verwalter/templates/simple/v1"
+        destination = "/etc/verwalter/templates"
     }
 
     provisioner "remote-exec" {

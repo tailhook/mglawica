@@ -6,6 +6,7 @@ Type=simple
 Environment="RUST_LOG=warn"
 User=verwalter
 ExecStart=/usr/bin/verwalter
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

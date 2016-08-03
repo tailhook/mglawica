@@ -1,0 +1,7 @@
+templates:
+  nginx: nginx.conf.hbs
+commands:
+- !Copy
+  src: "{{ files.nginx }}"
+  dest: "/etc/nginx/verwalter.conf"
+- !RootCommand [nginx, -s, reload]

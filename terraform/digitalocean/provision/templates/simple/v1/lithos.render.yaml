@@ -1,0 +1,10 @@
+templates:
+  sandbox: sandbox.yaml.hbs
+  processes: lithos.yaml.hbs
+commands:
+- !PeekLog "lithos/stderr/{{ role }}.log"
+- !PeekLog "lithos/{{ role }}.log"
+- !Copy
+  src: "{{ files.sandbox }}"
+  dest: "/etc/lithos/sandboxes/{{ role }}.yaml"
+- !RootCommand [lithos_switch, "{{ role }}", "{{ files.processes }}"]
