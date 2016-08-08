@@ -54,6 +54,7 @@ resource "digitalocean_droplet" "main" {
             "mkdir /etc/verwalter/scheduler",
             "mkdir /etc/verwalter/templates",
             "mkdir /etc/verwalter/frontend",
+            "ln -s /usr/share/verwalter/frontend /etc/verwalter/frontend/common",
 
             "mkdir /etc/tinc",
             "mkdir /etc/tinc/mglawica",
@@ -155,12 +156,12 @@ resource "digitalocean_droplet" "main" {
     provisioner "remote-exec" {
         inline = [
             "chmod +x /etc/tinc/mglawica/tinc-up",
-            "chmod o-r /etc/tinc/mglawica/rsa_key.priv",
+            "chmod go-r /etc/tinc/mglawica/rsa_key.priv",
             "{ echo Subnet = 172.24.0.254; cat /etc/tinc/mglawica/hosts/origin.pub; } > /etc/tinc/mglawica/hosts/origin",
             "{ echo Subnet = 172.24.0.1; cat /etc/tinc/mglawica/rsa_key.pub; } > /etc/tinc/mglawica/hosts/host1",
             "systemctl enable tinc.service",
             "systemctl start tinc.service",
-            "systemctl restart tinc.service", # ???
+            "systemctl restart tinc.service",
         ]
     }
 
