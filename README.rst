@@ -19,6 +19,7 @@ See `Verwalter's concepts`_ for description of roles of all these tools, but
 you don't need to learn all that. You should get used to vagga_ basics to be
 productive, though. Luckily there are `plenty of tutorials`_.
 
+.. _dokku: https://github.com/dokku/dokku
 .. _lithos: http://lithos.readthedocs.org
 .. _vagga: http://vagga.readthedocs.org
 .. _cantal: http://cantal.readthedocs.org
