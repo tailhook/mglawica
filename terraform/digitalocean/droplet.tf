@@ -27,7 +27,7 @@ resource "digitalocean_droplet" "main" {
     provisioner "remote-exec" {
         inline = [
             "apt-get update",
-            "apt-get install -y cantal verwalter lithos rsync cgroup-lite nginx",
+            "apt-get install -y cantal verwalter lithos rsync cgroup-lite nginx tinc",
             "adduser --system verwalter",
             "adduser --system rsyncd",
 
@@ -55,7 +55,9 @@ resource "digitalocean_droplet" "main" {
             "mkdir /etc/verwalter/templates",
             "mkdir /etc/verwalter/frontend",
 
-            "mkdir /etc/nginx/verwalter-configs",
+            "mkdir /etc/tinc",
+            "mkdir /etc/tinc/mglawica",
+            "mkdir /etc/tinc/mglawica/hosts",
         ]
     }
 
@@ -109,6 +111,57 @@ resource "digitalocean_droplet" "main" {
     provisioner "file" {
         source = "provision/templates"
         destination = "/etc/verwalter/templates"
+    }
+
+    # Setup a VPN
+
+    provisioner "local-exec" {
+        command = "[ -d tinc ] && rm -rf tinc; mkdir tinc tinc/.host1 tinc/hosts"
+    }
+    provisioner "local-exec" {
+        command = "tincd -c tinc -K < /dev/null"
+    }
+    provisioner "local-exec" {
+        command = "tincd -c tinc/.host1 -K < /dev/null"
+    }
+    provisioner "local-exec" {
+        command = "{ echo Subnet = 172.24.0.254; cat tinc/rsa_key.pub; } > tinc/hosts/origin"
+    }
+    provisioner "local-exec" {
+        command = "{ echo Subnet = 172.24.0.1; echo Address = ${digitalocean_droplet.main.ipv4_address}; cat tinc/.host1/rsa_key.pub; } > tinc/hosts/host1"
+    }
+    provisioner "local-exec" {
+        command = "cp provision/tinc/* tinc"
+    }
+
+    provisioner "file" {
+        source = "provision/tinc-host1/"
+        destination = "/etc/tinc/mglawica"
+    }
+    provisioner "file" {
+        source = "tinc/rsa_key.pub"
+        destination = "/etc/tinc/mglawica/hosts/origin.pub"
+    }
+    provisioner "file" {
+        source = "tinc/.host1/"
+        destination = "/etc/tinc/mglawica"
+    }
+
+    provisioner "file" {
+        source = "provision/tinc.service"
+        destination = "/etc/systemd/system/tinc.service"
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+            "chmod +x /etc/tinc/mglawica/tinc-up",
+            "chmod o-r /etc/tinc/mglawica/rsa_key.priv",
+            "{ echo Subnet = 172.24.0.254; cat /etc/tinc/mglawica/hosts/origin.pub; } > /etc/tinc/mglawica/hosts/origin",
+            "{ echo Subnet = 172.24.0.1; cat /etc/tinc/mglawica/rsa_key.pub; } > /etc/tinc/mglawica/hosts/host1",
+            "systemctl enable tinc.service",
+            "systemctl start tinc.service",
+            "systemctl restart tinc.service", # ???
+        ]
     }
 
     provisioner "remote-exec" {

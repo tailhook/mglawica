@@ -1,12 +1,14 @@
 [Unit]
 Description=Verwalter configuration service
+After=tinc.service
 
 [Service]
 Type=simple
 Environment="RUST_LOG=warn"
 User=verwalter
-ExecStart=/usr/bin/verwalter
+ExecStart=/usr/bin/verwalter --host 172.24.0.1
 Restart=always
+RestartSec=1
 
 [Install]
 WantedBy=multi-user.target
