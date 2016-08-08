@@ -4,9 +4,16 @@ Mglawica
 
 :Status: Proof of Concept
 
-A simple PaaS inspired by dokku but built with vagga_, cantal_, lithos_ and
-verwalter_. We also use nginx, rsync, linux and more, they are pretty
-ubuquitous, though.
+The basic idea here is to start with Dokku_-like experience to make first
+deployment as easy as possible, but allow to scale a cluster to several nodes.
+
+Theoretically you could continue to scale the cluster beyond several nodes,
+but usually this uncovers more details specific to your project. Which
+basically means you will fork our scripts, tweak verwalter_'s scheduler and
+continue use the tools on your own.
+
+This project is built with vagga_, cantal_, lithos_ and verwalter_. We also
+use nginx, rsync, linux and more, they are pretty ubuquitous, though.
 
 See `Verwalter's concepts`_ for description of roles of all these tools, but
 you don't need to learn all that. You should get used to vagga_ basics to be
