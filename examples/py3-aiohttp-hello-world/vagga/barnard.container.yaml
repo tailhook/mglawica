@@ -1,0 +1,6 @@
+setup:
+- !*Unpack [!*Include "barnard.yaml"]
+- !EnsureDir /target
+- !EnsureDir /target/py
+volumes:
+  /target/py: !Container py

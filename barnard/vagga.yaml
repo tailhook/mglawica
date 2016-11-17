@@ -1,0 +1,36 @@
+containers:
+  deps:
+    setup:
+    - !Alpine v3.4
+    - !Py3Install
+      - setuptools
+      - PyYAML
+      - trafaret
+      - trafaret_config
+    - &lithos_check !Tar
+      url: https://github.com/tailhook/lithos/releases/download/v0.6.4/lithos-check-v0.6.4.tar.gz
+      sha256: 190309acbad370928c730d9f7ac427fe2a495129d6296e26c377d4a2cea1af41
+      path: /usr/bin
+
+  tools:
+    setup:
+    - !Alpine v3.4
+    - !PipConfig { dependencies: true }
+    - !Py3Install [flake8]
+
+  package:
+    setup:
+    - !Container deps
+    - !Depends barnard
+    - !Depends setup.py
+    - !Sh "python3 setup.py install"
+    - !EnsureDir /target
+
+
+commands:
+
+  check: !Command
+    container: tools
+    run:
+    - flake8
+    - barnard

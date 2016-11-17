@@ -1,0 +1,17 @@
+containers:
+  py:
+    setup:
+    - !Alpine v3.3
+    - !PipConfig { dependencies: true }
+    - !Py3Install [aiohttp]
+  barnard: !*Include vagga/barnard.container.yaml
+
+commands:
+  run: !Command
+    container: py
+    description: Run the application
+    _mglawica:
+      port: 8080
+      name: hello
+    run: [python3, hello.py]
+  barnard: !*Include vagga/barnard.command.yaml

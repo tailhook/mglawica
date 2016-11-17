@@ -1,0 +1,4 @@
+/.vagga
+*.egg-info
+/dist
+/build

@@ -1,0 +1,5 @@
+!Command
+description: Run barnard (a container deployment tool)
+container: barnard
+run:
+- barnard
