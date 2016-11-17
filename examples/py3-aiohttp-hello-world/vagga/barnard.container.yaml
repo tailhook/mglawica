@@ -2,5 +2,6 @@ setup:
 - !*Unpack [!*Include "barnard.yaml"]
 - !EnsureDir /target
 - !EnsureDir /target/py
+auto-clean: true
 volumes:
   /target/py: !Container py

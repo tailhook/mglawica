@@ -13,5 +13,5 @@ commands:
     _mglawica:
       port: 8080
       name: hello
-    run: [python3, hello.py]
+    run: [/usr/bin/python3, hello.py]
   barnard: !*Include vagga/barnard.command.yaml

@@ -13,6 +13,8 @@ setup(name='barnard',
         'PyYaml',
         'trafaret',
         'trafaret_config',
+        'vagga2lithos',
+        'click',
       ],
       entry_points={
           'console_scripts': [
