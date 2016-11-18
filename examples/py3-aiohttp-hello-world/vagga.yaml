@@ -6,6 +6,29 @@ containers:
     - !Py3Install [aiohttp]
   barnard: !*Include vagga/barnard.container.yaml
 
+  # This container is just to run barnard without rebuilding container on
+  # each change don't copy it to real project
+  _barnard:
+    setup:
+    - !Alpine v3.4
+    - !BuildDeps [ca-certificates, git]
+    - !Py3Install
+      - setuptools
+      - PyYAML
+      - trafaret
+      - trafaret_config
+      - click
+    - &lithos_check !Tar
+      url: https://github.com/tailhook/lithos/releases/download/v0.6.4/lithos-check-v0.6.4.tar.gz
+      sha256: 190309acbad370928c730d9f7ac427fe2a495129d6296e26c377d4a2cea1af41
+      path: /usr/bin
+    - !EnsureDir /usr/lib/python3.5/site-packages/barnard
+    - !EnsureDir /usr/lib/python3.5/site-packages/vagga2lithos
+    volumes:
+      /usr/lib/python3.5/site-packages/barnard: !BindRO /volumes/barnard/barnard
+      /usr/lib/python3.5/site-packages/vagga2lithos: !BindRO /volumes/vagga2lithos/vagga2lithos
+    auto-clean: true
+
 commands:
   run: !Command
     container: py
@@ -15,3 +38,13 @@ commands:
       name: hello
     run: [/usr/bin/python3, hello.py]
   barnard: !*Include vagga/barnard.command.yaml
+
+  # This command is just to run barnard without rebuilding container on
+  # each change don't copy it to real project
+  _barnard: !Command
+    description: Run dev barnard (a container deployment tool)
+    container: _barnard
+    run:
+    - python3
+    - -m
+    - barnard
