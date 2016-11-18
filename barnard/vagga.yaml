@@ -9,7 +9,7 @@ containers:
       - trafaret
       - trafaret_config
       - click
-      - git+https://github.com/tailhook/vagga2lithos.git@0bc4727
+      - git+https://github.com/tailhook/vagga2lithos.git@43bd2a0
     - &lithos_check !Tar
       url: https://github.com/tailhook/lithos/releases/download/v0.6.4/lithos-check-v0.6.4.tar.gz
       sha256: 190309acbad370928c730d9f7ac427fe2a495129d6296e26c377d4a2cea1af41
