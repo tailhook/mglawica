@@ -1,0 +1,6 @@
+setup:
+- !Container "py"
+- !EnsureDir "/app"
+- !Copy
+  path: /app/hello.py
+  source: /work/hello.py

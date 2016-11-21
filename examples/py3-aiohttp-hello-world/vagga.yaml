@@ -5,6 +5,7 @@ containers:
     - !PipConfig { dependencies: true }
     - !Py3Install [aiohttp]
   barnard: !*Include vagga/barnard.container.yaml
+  _deploy-py: !*Include vagga/_deploy-py.container.yaml
 
   # This container is just to run barnard without rebuilding container on
   # each change don't copy it to real project
@@ -24,9 +25,13 @@ containers:
       path: /usr/bin
     - !EnsureDir /usr/lib/python3.5/site-packages/barnard
     - !EnsureDir /usr/lib/python3.5/site-packages/vagga2lithos
+    # this should be generated
+    - !EnsureDir "/target/_deploy-py"
     volumes:
       /usr/lib/python3.5/site-packages/barnard: !BindRO /volumes/barnard/barnard
       /usr/lib/python3.5/site-packages/vagga2lithos: !BindRO /volumes/vagga2lithos/vagga2lithos
+      # this should be generated
+      /target/_deploy-py: !Container "_deploy-py"
     auto-clean: true
 
 commands:
@@ -36,6 +41,7 @@ commands:
     _mglawica:
       port: 8080
       name: hello
+      files: [hello.py]
     run: [/usr/bin/python3, hello.py]
   barnard: !*Include vagga/barnard.command.yaml
 
