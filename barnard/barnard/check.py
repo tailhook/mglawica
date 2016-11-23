@@ -78,6 +78,11 @@ def check_containers(config, cmd, update, verbose):
             source="/work/" + f,
             path="/app/" + f,
         ))
+    new_container['setup'].append(vagga.EnsureDir('/config'))
+    new_container['setup'].append(vagga.Copy(
+        source="/work/barnard/lithos.yaml",
+        path="/config/lithos.yaml",
+    ))
     if old_container != new_container:
         if verbose:
             if update:

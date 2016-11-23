@@ -4,3 +4,7 @@ setup:
 - !Copy
   path: /app/hello.py
   source: /work/hello.py
+- !EnsureDir "/config"
+- !Copy
+  path: /config/lithos.yaml
+  source: /work/barnard/lithos.yaml
