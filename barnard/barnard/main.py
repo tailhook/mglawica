@@ -6,5 +6,6 @@ def main():
 
 
 from . import check
+from . import deploy
 
 

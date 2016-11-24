@@ -167,6 +167,7 @@ resource "digitalocean_droplet" "main" {
 
     provisioner "remote-exec" {
         inline = [
+            "systemctl restart nginx.service", # applies new config
             "systemctl enable cantal.service",
             "systemctl enable lithos.service",
             "systemctl enable verwalter.service",

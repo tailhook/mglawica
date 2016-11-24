@@ -1,6 +1,6 @@
 auto-clean: true
 setup:
 - !*Unpack [!*Include "barnard.yaml"]
-- !EnsureDir "/target/_deploy-py"
+- !EnsureDir "/target/py"
 volumes:
-  /target/_deploy-py: !Container "_deploy-py"
+  /target/py: !Container "py"

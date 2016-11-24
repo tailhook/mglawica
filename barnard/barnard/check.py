@@ -2,6 +2,7 @@ import os
 import sys
 import difflib
 import pathlib
+from collections import defaultdict
 
 import click
 from vagga2lithos.update import updated_config
@@ -9,6 +10,7 @@ from vagga2lithos import gen, metadata, lithos, vagga
 
 from .main import main as cli
 from .util import write_file
+from .infer import get_commands
 
 CONFIG_DIR = pathlib.Path('/work/barnard')
 
@@ -23,14 +25,18 @@ def check(update, verbose):
         CONFIG_DIR.mkdir()
     # TODO(tailhook) check if barnard is itself well-configured
     config = vagga.Config.load('vagga.yaml')
-    cmd = config.commands.get('_deploy-run', config.commands.get('run'))
-    check_lithos_configs(config, cmd, update, verbose)
-    containers = check_containers(config, cmd, update, verbose)
-    check_barnard(config, containers, update, verbose)
+    cmds = dict(get_commands(config))
+    by_container = defaultdict(list)
+    for name, cmd in cmds.items():
+        check_lithos_configs(config, name, cmd, update, verbose)
+        by_container[cmd.container].append((name, cmd))
+    for cname, commands in by_container.items():
+        check_container(config, cname, commands, update, verbose)
+    check_barnard(config, by_container.keys(), update, verbose)
 
 
-def check_lithos_configs(config, cmd, update, verbose):
-    lithos_file = CONFIG_DIR / "lithos.yaml"
+def check_lithos_configs(config, name, cmd, update, verbose):
+    lithos_file = CONFIG_DIR / ("lithos."+name+".yaml")
     if not lithos_file.exists():
         data = gen.generate_command(config, cmd)
         write_file(lithos_file, data)
@@ -55,34 +61,39 @@ def check_lithos_configs(config, cmd, update, verbose):
                 sys.exit(7)
 
 
-def check_containers(config, cmd, update, verbose):
-    cname = '_deploy-' + cmd.container
+def check_container(config, orig_name, cmds, update, verbose):
+    cname = '_deploy-' + orig_name
     container = config.containers[cname]
     assert isinstance(container, vagga.Include)
     filename = container.file
     old_container = vagga.load_partial(filename)
     new_container = {
         'setup': [
-            vagga.Container(cmd.container),
+            vagga.Container(orig_name),
             vagga.EnsureDir('/app'),
         ],
     }
-    dirs = set()
-    for f in getattr(cmd, '_mglawica', {}).get('files', []):
-        if '/' in f:
-            dir = f[:f.index('/')]
-            if dir not in dirs:
-                dirs.add(dir)
-                new_container['setup'].append(vagga.EnsureDir('/app/' + dir))
-        new_container['setup'].append(vagga.Copy(
-            source="/work/" + f,
-            path="/app/" + f,
-        ))
     new_container['setup'].append(vagga.EnsureDir('/config'))
-    new_container['setup'].append(vagga.Copy(
-        source="/work/barnard/lithos.yaml",
-        path="/config/lithos.yaml",
-    ))
+    dirs = set()
+    copied = set()
+    for cmdname, cmd in cmds:
+        for f in getattr(cmd, '_mglawica', {}).get('files', []):
+            if '/' in f:
+                dir = f[:f.index('/')]
+                if dir not in dirs:
+                    dirs.add(dir)
+                    new_container['setup'].append(
+                        vagga.EnsureDir('/app/' + dir))
+            if f not in copied:
+                new_container['setup'].append(vagga.Copy(
+                    source="/work/" + f,
+                    path="/app/" + f,
+                ))
+                copied.add(f)
+        new_container['setup'].append(vagga.Copy(
+            source="/work/barnard/lithos."+cmdname+".yaml",
+            path="/config/lithos."+cmdname+".yaml",
+        ))
     if old_container != new_container:
         if verbose:
             if update:
@@ -95,7 +106,6 @@ def check_containers(config, cmd, update, verbose):
         else:
             # TODO(tailhook) set error code and continue
             sys.exit(7)
-    return [cname]
 
 
 def check_barnard(config, containers, update, verbose):
