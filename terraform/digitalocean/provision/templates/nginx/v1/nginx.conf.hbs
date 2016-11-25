@@ -9,8 +9,13 @@
         {{#each nginx_hosts}}
 
             server {
-                listen *:80;
-                server_name .{{ name }}.{{ ../../main_host }};
+                listen 80;
+                set $name "{{ name }}";
+                server_name
+                    {{# each ../../../../base_hosts }}
+                    .$name.{{ . }}
+                    {{/each}}
+                    ;
 
                 location / {
                     proxy_http_version 1.1;

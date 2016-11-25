@@ -7,7 +7,8 @@ user-id: 1
 group-id: 1
 environ:
   PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-memory-limit: 1Ti
+memory-limit: 1024Gi
+workdir: /app
 fileno-limit: 65536
 cpu-shares: 1024
 executable: /usr/bin/python3

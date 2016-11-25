@@ -8,6 +8,10 @@ local function simple_v1_scheduler(props)
     local runtime = props.runtime
     local actions = props.actions
     local now = props.now
+    nodes = {}
+    for _, peer in pairs(props.peers) do
+        nodes[#nodes] = peer.hostname
+    end
 
     local all_ver, ver, timestamp = version_select.lame_select(
         runtime, states, actions, now)
@@ -37,20 +41,17 @@ local function simple_v1_scheduler(props)
     trace.object("settings", settings)
 
     -- default host for staging containers
-    local node = "maggie"
-    if settings.servers ~= nil then
-        -- TODO(pc) use random server, but first check in states
-        node = settings.servers[1]
-    end
     local nginx_hosts = nil
     for _, daemon in pairs(runtime.daemons) do
         if daemon['http-host'] then
             nginx_hosts = {{
                 name=daemon['http-host'],
-                targets={{
-                    host=node,
-                    port=daemon['port'],
-                }},
+                targets=func.map_to_dict(function(k, node)
+                    return k, {
+                        host=node,
+                        port=daemon['port'],
+                    }
+                end, nodes),
                 static_container=daemon.static_container,
                 static_host=daemon.static_host,
                 static_prefixes=daemon.static_prefixes,
@@ -71,15 +72,16 @@ local function simple_v1_scheduler(props)
             user_count=settings.user_count,
             nginx_hosts=nginx_hosts,
         },
-        nodes={
-            [node]=running and {
-                daemons=func.map_pairs(
-                    function (k, v)
-                        return merge.tables(v, {key=k, instances=1})
-                    end,
-                    runtime.daemons),
-            } or {daemons={}}
-        }
+        nodes=func.map_to_dict(function(_, node)
+            return node, (
+                running and {
+                    daemons=func.map_pairs(
+                        function (k, v)
+                            return merge.tables(v, {key=k, instances=1})
+                        end,
+                        runtime.daemons),
+                } or {daemons={}})
+        end, nodes)
     }
 end
 

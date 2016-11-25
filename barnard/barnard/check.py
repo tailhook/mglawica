@@ -71,9 +71,10 @@ def check_container(config, orig_name, cmds, update, verbose):
         'setup': [
             vagga.Container(orig_name),
             vagga.EnsureDir('/app'),
+            vagga.EnsureDir('/state'),
+            vagga.EnsureDir('/config'),
         ],
     }
-    new_container['setup'].append(vagga.EnsureDir('/config'))
     dirs = set()
     copied = set()
     for cmdname, cmd in cmds:

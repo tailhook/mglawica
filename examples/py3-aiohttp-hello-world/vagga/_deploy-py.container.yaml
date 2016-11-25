@@ -1,6 +1,7 @@
 setup:
 - !Container "py"
 - !EnsureDir "/app"
+- !EnsureDir "/state"
 - !EnsureDir "/config"
 - !Copy
   path: /app/hello.py

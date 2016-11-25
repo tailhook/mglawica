@@ -16,14 +16,18 @@ end
 
 local function _scheduler(state)
 
+    local meta = state.runtime['metadata']
+    state.runtime['metadata'] = nil
+
+    local base_hosts = meta['base_hosts']
     -- hardcoded role
     state.runtime['nginx'] = {kind='nginx'}
 
-    return JSON:encode(merge.schedules(
+    local schedule = merge.schedules(
         func.map_pairs(function (role_name, role_meta)
 
             print("-------------- ROLE", role_name, "-----------------")
-            local scheduler_name = fearful_trim(role_meta.kind)
+            local scheduler_name = fearful_trim(role_meta.kind) or 'simple_v1'
             if not scheduler_name or schedulers[scheduler_name] == nil then
               print("unknown scheduler type", scheduler_name)
               return nil
@@ -39,7 +43,10 @@ local function _scheduler(state)
                 now=state.now,
             }
 
-        end, state.runtime)))
+        end, state.runtime))
+
+    schedule['base_hosts'] = base_hosts
+    return JSON:encode(schedule)
 end
 
 return {

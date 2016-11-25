@@ -8,6 +8,12 @@ variable "do_ssh_key" {
     description = "Digital Ocean SSH Key"
 }
 
+variable "public_host_base" {
+    type = "string"
+    default = "h1.mglawica.org"
+    description = "Public host name used to expose projects"
+}
+
 provider "digitalocean" {
     token = "${var.do_token}"
 }
@@ -29,7 +35,8 @@ resource "digitalocean_droplet" "main" {
             "apt-get update",
             "apt-get install -y cantal verwalter lithos rsync cgroup-lite nginx tinc",
             "adduser --system verwalter",
-            "adduser --system rsyncd",
+            # if we figure out how to nginx and rsync users could coexist
+            # "adduser --system rsyncd",
 
             # Terraform can't create dirs for some reason Even more, instead
             # of creating a directory it writes the file with shortening the
@@ -41,7 +48,7 @@ resource "digitalocean_droplet" "main" {
             "mkdir /var/lib/lithos",
             "mkdir /var/log/lithos",
             "mkdir /var/lib/lithos/images",
-            "chown rsyncd /var/lib/lithos/images",
+            "chown www-data /var/lib/lithos/images",
             "mkdir /etc/lithos/sandboxes",
             "mkdir /etc/lithos/processes",
             "lithos_mkdev /var/lib/lithos/dev",
@@ -49,7 +56,11 @@ resource "digitalocean_droplet" "main" {
             "mkdir /etc/verwalter",
             "mkdir /var/lib/verwalter",
             "mkdir /var/log/verwalter",
+            "chown verwalter /var/log/verwalter",
+            "mkdir /etc/nginx/verwalter-configs",
+            "chown verwalter /etc/nginx/verwalter-configs",
             "mkdir /etc/verwalter/runtime",
+            "chown www-data /etc/verwalter/runtime",
             "mkdir /etc/verwalter/sandbox",
             "mkdir /etc/verwalter/scheduler",
             "mkdir /etc/verwalter/templates",
@@ -110,7 +121,7 @@ resource "digitalocean_droplet" "main" {
     }
 
     provisioner "file" {
-        source = "provision/templates"
+        source = "provision/templates/"
         destination = "/etc/verwalter/templates"
     }
 
@@ -162,6 +173,7 @@ resource "digitalocean_droplet" "main" {
             "systemctl enable tinc.service",
             "systemctl start tinc.service",
             "systemctl restart tinc.service",
+            "echo '{\"base_hosts\": [\"${digitalocean_droplet.main.ipv4_address}.xip.io\",\"${var.public_host_base}\"]}' > /etc/verwalter/runtime/metadata.json",
         ]
     }
 

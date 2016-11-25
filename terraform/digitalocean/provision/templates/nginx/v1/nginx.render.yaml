@@ -3,5 +3,5 @@ templates:
 commands:
 - !Copy
   src: "{{ files.nginx }}"
-  dest: "/etc/nginx/verwalter.conf"
+  dest: "/etc/nginx/verwalter-configs/main.conf"
 - !RootCommand [nginx, -s, reload]
