@@ -65,7 +65,7 @@ Preparing a Project
 ===================
 
 
-First insert ``barnard`` (our deployment tool) into your ``vagga.yaml``:
+First insert ``barnard`` (our deployment tool) into your ``vagga.yaml``::
 
     cd ~/foobar
     mkdir vagga
@@ -101,7 +101,7 @@ Insert the following into your ``vagga.yaml`` (put in respective sections)::
 Done. Yes **we are working on oneliner** like ``curl ... | sh`` to do it
 for you!
 
-Now you should annotate command you want to use with some metadata:
+Now you should annotate command you want to use with some metadata::
 
     commands:
       run: !Command
