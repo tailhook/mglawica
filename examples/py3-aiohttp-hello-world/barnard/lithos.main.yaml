@@ -2,15 +2,16 @@
 # v2l: arguments: [hello.py]
 # v2l: environ: {PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'}
 # v2l: executable: /usr/bin/python3
+# v2l: work-dir: /app
 kind: Daemon
 user-id: 1
 group-id: 1
 environ:
   PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 memory-limit: 1024Gi
-workdir: /app
 fileno-limit: 65536
 cpu-shares: 1024
+workdir: /app
 executable: /usr/bin/python3
 arguments:
 - "hello.py"
