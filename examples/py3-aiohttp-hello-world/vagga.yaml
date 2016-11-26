@@ -15,9 +15,7 @@ containers:
     - !Install [ca-certificates, git, rsync]
     - !Py3Install
       - setuptools
-      - PyYAML
-      - trafaret
-      - trafaret_config
+      - ruamel.yaml
       - click
       - requests
     - &lithos_check !Tar
