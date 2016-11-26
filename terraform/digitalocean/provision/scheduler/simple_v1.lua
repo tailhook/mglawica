@@ -10,7 +10,7 @@ local function simple_v1_scheduler(props)
     local now = props.now
     nodes = {}
     for _, peer in pairs(props.peers) do
-        nodes[#nodes] = peer.hostname
+        nodes[#nodes+1] = peer.hostname
     end
 
     local all_ver, ver, timestamp = version_select.lame_select(
@@ -46,8 +46,8 @@ local function simple_v1_scheduler(props)
         if daemon['http-host'] then
             nginx_hosts = {{
                 name=daemon['http-host'],
-                targets=func.map_to_dict(function(k, node)
-                    return k, {
+                targets=func.map(function(node)
+                    return {
                         host=node,
                         port=daemon['port'],
                     }
