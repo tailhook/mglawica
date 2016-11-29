@@ -10,7 +10,7 @@ containers:
       - trafaret_config
       - click
       - requests
-      - git+https://github.com/tailhook/vagga2lithos.git@a70b15c
+      - git+https://github.com/tailhook/vagga2lithos.git@7b4adb1
     - &lithos_check !Tar
       url: https://github.com/tailhook/lithos/releases/download/v0.6.4/lithos-check-v0.6.4.tar.gz
       sha256: 190309acbad370928c730d9f7ac427fe2a495129d6296e26c377d4a2cea1af41
@@ -32,6 +32,12 @@ containers:
     - !EnsureDir /target
     auto-clean: true
 
+  # this is only here to test barnard inject
+  barnard:
+    setup:
+    - !Tar
+      url: http://localhost:8000/barnard-dev.tar.xz
+      sha256: 030d372157bb2fbd38c12de1318f01908c435426d5c47fae9ce97b88e947a624
 
 commands:
 
@@ -39,4 +45,11 @@ commands:
     container: tools
     run:
     - flake8
+    - barnard
+
+  run: !Command
+    container: deps
+    run:
+    - python3
+    - -m
     - barnard
