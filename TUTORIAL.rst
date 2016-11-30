@@ -265,6 +265,8 @@ If you change ``vagga.yaml`` you should re-check your files:
     git push origin master v1.2.3
     vagga barnard deploy
 
+.. _git tag: https://git-scm.com/book/en/v2/Git-Basics-Tagging
+
 
 Troubleshooting
 ===============
