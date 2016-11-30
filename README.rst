@@ -3,6 +3,7 @@ Mglawica
 ========
 
 :Status: Proof of Concept
+:Documetation: tutorial_
 
 The basic idea here is to start with Dokku_-like experience to make first
 deployment as easy as possible, but allow to scale a cluster to several nodes.
@@ -19,6 +20,8 @@ See `Verwalter's concepts`_ for description of roles of all these tools, but
 you don't need to learn all that. You should get used to vagga_ basics to be
 productive, though. Luckily there are `plenty of tutorials`_.
 
+
+.. _tutorial: https://github.com/tailhook/mglawica/blob/master/TUTORIAL.rst
 .. _dokku: https://github.com/dokku/dokku
 .. _lithos: http://lithos.readthedocs.org
 .. _vagga: http://vagga.readthedocs.org
@@ -33,8 +36,8 @@ License
 
 Licensed under either of
 
- * Apache License, Version 2.0, (./LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
- * MIT license (./LICENSE-MIT or http://opensource.org/licenses/MIT)
+* Apache License, Version 2.0, (./LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
+* MIT license (./LICENSE-MIT or http://opensource.org/licenses/MIT)
 
 at your option.
 

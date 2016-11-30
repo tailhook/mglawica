@@ -2,7 +2,7 @@ Tutorial
 ========
 
 In this tutorial we will create a "Hello world" web application in python and
-deploy it in verwalter cluster.
+deploy it in mglawica cluster.
 
 Prerequisites:
 
@@ -12,6 +12,7 @@ Prerequisites:
 * You have basic internet knowledge, know what TCP ports are and how
   to navigate to the web service with non-default port
 * Basic knowledge of git is expected too
+* You have an account and ten cents for experiments in `Digital Ocean`_
 
 Start with:
 
@@ -21,6 +22,9 @@ Start with:
 
 .. _vagga: https://vagga.readthedocs.io/en/latest/installation.html
 .. _tinc: https://vagga.readthedocs.io/en/latest/installation.html
+.. _terraform: https://www.terraform.io/downloads.html
+.. _Digital Ocean: https://digitalocean.com
+
 
 Bootstrap Application
 =====================
@@ -64,12 +68,13 @@ That's all needed to run it, try:
 
 .. code-block:: console
 
-    > vagga run
+    $ vagga run
      ... some container build messages ...
     ======== Running on http://0.0.0.0:10000 ========
     (Press CTRL+C to quit)
 
-Okay, you can go to the url to see if your app works locally.
+Okay, you can go to the http://localhost:10000 to see if your app works
+locally.
 
 It's good idea to ``git commit`` at this point. Don't forget to add ``.vagga``
 directory to your ``.gitignore``.
@@ -153,10 +158,10 @@ It's now good idea to commit the file as described. Then run::
 This generates the following files:
 
 * ``barnard/lithos.yaml`` -- a configuration that describes the command
-  that will be run in production environment. You might want to edit it's
+  that will be run in production environment. You might want to edit its
   command line and/or limits on resources.
 * ``vagga/_deploy-py.container.yaml`` -- a file that describes how to build
-  a filesystem image to create a container
+  a filesystem image for the container
 
 Despite these files are initially generated we commit them to version control
 anyway. Every time you change vagga.yaml it's good idea to run
@@ -185,14 +190,16 @@ Setting up Digital Ocean
 
 *Tested with terraform == 0.6.15*
 
-First set up your digitalocean keys, and possibly a domain name::
+First set up your digitalocean keys, and possibly a domain name:
+
+.. code-block:: shell
 
     cd ~/mgl-common/terraform/digitalocean
     # create token in https://cloud.digitalocean.com/settings/api/tokens
     echo 'do_token = "xxxyour_tokenxx"' > key.tfvars
     # upload ssh key in https://cloud.digitalocean.com/settings/security
     echo 'do_ssh_key = "12:34:56:78:9a:bc:de:f1"' >> key.tfvars
-    # optional public host (wildcard host should be configured)
+    # **optional** public host (wildcard host should be configured)
     echo 'public_host = "my.host.whatever"' >> key.tfvars
 
 Then just run our startup script::
@@ -241,6 +248,11 @@ Now you can deploy your first project:
     http://hello-world.46.101.221.105.xip.io/
     http://hello-world.h1.mglawica.org/
 
+If you configured public host name it will be displayed here too. But if not
+we also have an ugly but always working name that ends with ``xip.io``, which
+is publicly accessible and ``h1.mglawica.org`` which is only accessible from
+inside the VPN.
+
 
 Workflow
 ========
@@ -286,6 +298,10 @@ that there are three logs for your service:
 * Log of verwalter generating configs for your service (container errors)
 * Log of container startup ``lithos/hello-world.log``
 * Log of container's own stdio ``lithos/stderr/hello-world.log``
+
+Here is a nice page with the list of your services:
+
+http://h1.mglawica.org:8379/services
 
 
 Maintenance
