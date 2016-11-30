@@ -1,10 +1,9 @@
 #!/bin/sh -e
-: ${VAGGA:-vagga}
-[ -d dist ] || mkdir dist
-$VAGGA _pack_image -J package > dist/barnard-dev.tar.xz
-sum=$(sha256sum dist/barnard-dev.tar.xz | cut -d' ' -f1)
-cat <<END
-- !Tar
-  url: http://localhost:8000/barnard-dev.tar.xz
-  sha256: $sum
-END
+: ${VAGGA:=vagga}
+version=$(git describe)
+mkdir -p dist
+$VAGGA _pack_image -J package > dist/barnard-${version}.tar.xz
+url="http://sh.mglawica.org/barnard-images/barnard-${version}.tar.xz"
+sum=$(sha256sum dist/barnard-${version}.tar.xz | cut -d' ' -f1)
+sed '/url:/{s@http:.*@'$url'@};/sha256:/{s@\w.*@sha256: '$sum'@}' \
+    bootstrap.sh  > dist/barnard-testing.sh
