@@ -1,6 +1,7 @@
 import re
 import os
 import pathlib
+import readline
 
 import yaml
 import click
@@ -41,12 +42,27 @@ def bootstrap(input):
 
     print("Fine. Your config is:")
     print("")
-    lines = yaml.dump({'commands': {cmd: config}}).splitlines()
-    lines[1] += ' !Command'
-    lines.insert(2, "    # .. command config ...")
-    print('\n'.join(lines))
+    exlines = yaml.dump({'commands': {cmd: config}}).splitlines()
+    exlines[1] += ' !Command'
+    exlines.insert(2, "    # .. command config ...")
+    print('\n'.join(exlines))
     print("")
     print("We'll try to put it in file, but this sometimes fails")
+
+    destcmd = cmds[cmd]
+    for key, val in destcmd[1].value:
+        if key.value == 'run':
+            run_line = key.start_mark.line
+            run_indent = key.start_mark.column
+            break
+    else:
+        human.error("Can't find `run` in your command. "
+                    "Supervise commands are not supported yet")
+
+    indent = ' '*run_indent
+    data = yaml.dump(config).splitlines()
+    lines[run_line:run_line] = [indent + line for line in data]
+    write_file(input, '\n'.join(lines))
 
 
 def ask_questions(cmds):
