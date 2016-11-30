@@ -116,7 +116,7 @@ def ask_questions(cmds):
             print("Sorry, only alphanumeric and dash allowed")
         else:
             break
-    print(repr(cmd), "is good name. Just few things left.")
+    print(repr(role), "is good name. Just few things left.")
 
     print("")
     print("You need a free port on your host system. Different services must")
