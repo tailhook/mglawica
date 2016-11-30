@@ -83,5 +83,63 @@ We'll setup cluster shortly in the meantime we can prepare all the configs.
 
 First, bootstrap the barnard::
 
-    curl -sSf http://mglawica.org/barnard-bootstrap.sh | sh
+    curl -sSf http://sh.mglawica.org/barnard-testing.sh | sh
 
+(We only have ``-testing`` version so far)
+
+First it puts bootstrap code into your vagga.yaml then asks few questions
+and adds some metadata to vagga.yaml. Here is the example session::
+
+    vagga is /usr/bin/vagga
+    mktemp is /usr/bin/mktemp
+    vagga.yaml 226 8 81a4 1000 100 fe03 128529 1 0 0 1480538587 1480538587 1480538587 0 4096
+    Ready. Copying files...
+
+    ------------------------------------------------------------------
+    Running `vagga barnard bootstrap`... You may do this at any time
+
+    Okay. We are going to add some small but important metadata
+    to your vagga.yaml file.
+
+    Don't be too cautious here, you can edit it later
+    directly in vagga.yaml
+
+    Available commands: run
+    Which command you want to deploy: run
+    Got it. Command: 'run'
+
+    You need some name for the program that is global to your cluster
+    Role name: hello-world
+    'run' is good name. Just few things left.
+
+    You need a free port on your host system. Different services must
+    allocate different ports. Good value is somewhere
+    in the range 10000-20000
+    Port: 10000
+
+    The last step is to choose which files are going to be deployed.
+    Container is always deployed, but probably you will need some
+    files from your working directory
+
+    Your directory list: vagga vagga.yaml hello.py
+
+    Enter space separated list of files and directories. Vagga will
+    version them properly as part of container. You can edit the list
+    later
+    Files: hello.py
+    Fine. Your config is:
+
+    commands:
+      run: !Command
+        # .. command config ...
+        _mglawica:
+          files: [hello.py]
+          port: 10000
+          role: hello-world
+
+    We'll try to put it in file, but this sometimes fails
+    Fine. You may want to commit now:
+      git add vagga/ vagga.yaml
+      git commit
+
+It's now good idea to commit the file as described.

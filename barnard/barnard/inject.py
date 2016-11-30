@@ -100,12 +100,13 @@ def inject(input):
     barnard_cfg = vagga.dump(barnard['setup'])
 
     projdir = pathlib.Path(input)
-    dir = projdir.parent() / 'vagga'
-    os.makedirs(str(dir))
+    dir = projdir.parent / 'vagga'
+    if not dir.exists():
+        os.makedirs(str(dir))
     write_file(dir / 'barnard.container.yaml', CONTAINER)
     write_file(dir / 'barnard.command.yaml', COMMAND)
     write_file(dir / 'barnard.yaml', barnard_cfg)
 
-    write_file(input, '\n'.join(lines))
+    write_file(input, '\n'.join(lines) + '\n')
 
 

@@ -62,7 +62,7 @@ def bootstrap(input):
     indent = ' '*run_indent
     data = yaml.dump(config).splitlines()
     lines[run_line:run_line] = [indent + line for line in data]
-    write_file(input, '\n'.join(lines))
+    write_file(input, '\n'.join(lines) + '\n')
 
 
 def ask_questions(cmds):
@@ -73,7 +73,7 @@ def ask_questions(cmds):
     print("directly in vagga.yaml")
     print("")
 
-    print("Available commands:", ', '.join(cmds))
+    print("Available commands:", ', '.join([c for c in cmds if c != 'barnard'))
     while True:
         cmd = input("Which command you want to deploy: ").strip()
         if cmd not in cmds:

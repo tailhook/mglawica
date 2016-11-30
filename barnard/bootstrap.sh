@@ -23,7 +23,7 @@ containers:
     setup:
     - !Tar
       url: http://localhost:8000/barnard-dev.tar.xz
-      sha256: 030d372157bb2fbd38c12de1318f01908c435426d5c47fae9ce97b88e947a624
+      sha256: 64ae7dca267a79dd13ceac25cccbc4787eec3b23d9d7ec762447b3e1254c97cf
 
 commands:
   barnard: !Command
@@ -39,8 +39,8 @@ cd "$tmpdir"
 
 cd "$tmpdir/target"
 
-"$VAGGA" _list | grep -q ^barnard$ || fail "Failed adding barnard command"
-"$VAGGA" _list --containers | grep -q ^barnard$ || fail "Failed adding barnard container"
+"$VAGGA" _list | grep -q '^barnard\b' || fail "Failed adding barnard command"
+"$VAGGA" _list --containers | grep -q '^barnard\b' || fail "Failed adding barnard container"
 
 echo Ready. Copying files...
 
@@ -50,8 +50,13 @@ cp vagga/* "$DIR/vagga"
 
 cd "$DIR"
 
-echo 'Running `vagga barnard bootstrap` you may do this at any time'
+echo
+echo ------------------------------------------------------------------
+echo 'Running `vagga barnard bootstrap`... You may do this at any time'
+echo
 
-"$VAGGA" barnard bootstrap || fail "Something wrong during bootstrap. You may wish to run it again (or use git)"
+"$VAGGA" barnard bootstrap < /dev/tty # || fail "Something wrong during bootstrap. You may wish to run it again (or use git)"
 
-echo 'Fine. You may want to `git commit` now'
+echo 'Fine. You may want to commit now:'
+echo '  git add vagga/ vagga.yaml'
+echo '  git commit'
