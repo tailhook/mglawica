@@ -138,8 +138,33 @@ and adds some metadata to vagga.yaml. Here is the example session::
           role: hello-world
 
     We'll try to put it in file, but this sometimes fails
+
     Fine. You may want to commit now:
       git add vagga/ vagga.yaml
       git commit
+    Then run:
+      vagga barnard check -u
+      vagga barnard deploy
 
-It's now good idea to commit the file as described.
+It's now good idea to commit the file as described. Then run::
+
+    vagga barnard check -u
+
+This generates the following files:
+
+* ``barnard/lithos.yaml`` -- a configuration that describes the command
+  that will be run in production environment. You might want to edit it's
+  command line and/or limits on resources.
+* ``vagga/_deploy-py.container.yaml`` -- a file that describes how to build
+  a filesystem image to create a container
+
+Despite these files are initially generated we commit them to version control
+anyway. Every time you change vagga.yaml it's good idea to run
+``vagga barnard check -u`` again.
+
+Now we are ready to deploy, but since we haven't setup a hosting yet, we
+can (and should) run a dry run deploy to ensure that everything is fine::
+
+    vagga barnard deploy --dry-run
+
+
