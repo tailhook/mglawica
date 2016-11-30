@@ -10,12 +10,7 @@
 
             server {
                 listen 80;
-                set $name "{{ name }}";
-                server_name
-                    {{# each ../../../../base_hosts }}
-                    .$name.{{ . }}
-                    {{/each}}
-                    ;
+                server_name .{{ name }};
 
                 location / {
                     proxy_http_version 1.1;

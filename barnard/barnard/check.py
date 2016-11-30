@@ -122,6 +122,7 @@ def check_barnard(config, containers, update, verbose):
         'auto-clean': True,
     }
     for cname in containers:
+        cname = '_deploy-' + cname
         dir = '/target/' + cname
         new_container['setup'].append(vagga.EnsureDir(dir))
         new_container['volumes'][dir] = vagga.Container(cname)

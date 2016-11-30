@@ -33,10 +33,20 @@ def bootstrap(input):
         error("flow style (using braces) is not supported in root of config")
 
     cmds = {}
+    barnard_line = None
+    barnard_indent = None
     for (key, value) in root.value:
         if key.value == 'commands':
             for pair in value.value:
                 cmds[pair[0].value] = pair
+        if key.value == 'containers':
+            for k, v in value.value:
+                if k.value == 'barnard':
+                    barnard_indent = k.start_mark.column
+                    barnard_line = k.start_mark.line
+
+    if barnard_line is None:
+        human.error("Can't find `barnard` in containers")
 
     cmd, config = ask_questions(cmds)
 
@@ -50,18 +60,33 @@ def bootstrap(input):
     print("We'll try to put it in file, but this sometimes fails")
 
     destcmd = cmds[cmd]
+    run_line = None
+    container = None
     for key, val in destcmd[1].value:
         if key.value == 'run':
             run_line = key.start_mark.line
             run_indent = key.start_mark.column
-            break
-    else:
-        human.error("Can't find `run` in your command. "
+        if key.value == 'container':
+            container = val.value
+    if run_line is None or container is None:
+        human.error("Can't find `run` or `container` in your command. "
                     "Supervise commands are not supported yet")
+
 
     indent = ' '*run_indent
     data = yaml.dump(config).splitlines()
     lines[run_line:run_line] = [indent + line for line in data]
+
+    if barnard_line > run_line:
+        barnard_line += len(data)
+    lines.insert(barnard_line, ' '*barnard_indent +
+        '_deploy-{0}: !*Include "vagga/_deploy-{0}.container.yaml"'
+        .format(container))
+
+    dcontainer = 'vagga/_deploy-{0}.container.yaml'.format(container)
+    if not os.path.exists(dcontainer):
+        write_file(dcontainer, '')
+
     write_file(input, '\n'.join(lines) + '\n')
 
 
@@ -73,7 +98,8 @@ def ask_questions(cmds):
     print("directly in vagga.yaml")
     print("")
 
-    print("Available commands:", ', '.join([c for c in cmds if c != 'barnard'))
+    print("Available commands:",
+        ', '.join([c for c in cmds if c != 'barnard']))
     while True:
         cmd = input("Which command you want to deploy: ").strip()
         if cmd not in cmds:
@@ -128,7 +154,7 @@ def ask_questions(cmds):
     files = input("Files: ").split()
     config = {
         '_mglawica': {
-            'role': role,
+            'name': role,
             'port': port,
             'files': files,
         }

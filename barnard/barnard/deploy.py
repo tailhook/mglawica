@@ -25,7 +25,7 @@ def deploy(dry_run, override_version_number):
     try:
         _deploy(dry_run, override_version_number)
     except Exception as e:
-        human.error(e)
+        human.exception(e, 'unexpected error')
 
 def _deploy(dry_run, override_version_number):
     ids = containers.discover()

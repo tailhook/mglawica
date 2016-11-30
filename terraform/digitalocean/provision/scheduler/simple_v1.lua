@@ -8,6 +8,7 @@ local function simple_v1_scheduler(props)
     local runtime = props.runtime
     local actions = props.actions
     local now = props.now
+    local base_hosts = props.base_hosts
     nodes = {}
     for _, peer in pairs(props.peers) do
         nodes[#nodes+1] = peer.hostname
@@ -44,18 +45,20 @@ local function simple_v1_scheduler(props)
     local nginx_hosts = nil
     for _, daemon in pairs(runtime.daemons) do
         if daemon['http-host'] then
-            nginx_hosts = {{
-                name=daemon['http-host'],
-                targets=func.map(function(node)
-                    return {
-                        host=node,
-                        port=daemon['port'],
-                    }
-                end, nodes),
-                static_container=daemon.static_container,
-                static_host=daemon.static_host,
-                static_prefixes=daemon.static_prefixes,
-            }}
+            nginx_hosts = func.map(function(suffix)
+                return {
+                    name=daemon['http-host'] .. '.' .. suffix,
+                    targets=func.map(function(node)
+                        return {
+                            host=node,
+                            port=daemon['port'],
+                        }
+                    end, nodes),
+                    static_container=daemon.static_container,
+                    static_host=daemon.static_host,
+                    static_prefixes=daemon.static_prefixes,
+                }
+            end, base_hosts)
         end
     end
 

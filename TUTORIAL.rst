@@ -22,7 +22,7 @@ Start with:
 .. _vagga: https://vagga.readthedocs.io/en/latest/installation.html
 .. _tinc: https://vagga.readthedocs.io/en/latest/installation.html
 
-Bootstart Application
+Bootstrap Application
 =====================
 
 Create ``hello.py``:
@@ -33,11 +33,11 @@ Create ``hello.py``:
     from aiohttp import web
 
     async def hello(request):
-        return web.Response(body=b"Hello, world")
+        return web.Response(body=b"Hello, world", content_type="text/plain")
 
     app = web.Application()
     app.router.add_route('GET', '/', hello)
-    web.run_app(app)
+    web.run_app(app, port=10000)
 
 As you can see we used super-puper brilliant new technology called ``asyncio``.
 You don't have to know all the details to get it running. Just try it and
@@ -66,7 +66,7 @@ That's all needed to run it, try:
 
     > vagga run
      ... some container build messages ...
-    ======== Running on http://0.0.0.0:8080 ========
+    ======== Running on http://0.0.0.0:10000 ========
     (Press CTRL+C to quit)
 
 Okay, you can go to the url to see if your app works locally.
@@ -163,8 +163,145 @@ anyway. Every time you change vagga.yaml it's good idea to run
 ``vagga barnard check -u`` again.
 
 Now we are ready to deploy, but since we haven't setup a hosting yet, we
-can (and should) run a dry run deploy to ensure that everything is fine::
+can (and should) run a dry run deploy to ensure that everything is fine:
 
-    vagga barnard deploy --dry-run
+.. code-block:: console
+
+    $ vagga barnard deploy --dry-run
+    OK: 72 MiB in 27 packages
+        => git describe --match 'v[0-9]*' --dirty
+        => git rev-list HEAD
+    Application name: hello-world
+    Version: v0.0.0-0-gdd5c1c2
+    Deployment config: {'main': {'config': '/config/lithos.main.yaml',
+                                 'http-host': 'hello-world',
+                                 'image': '_deploy-py.b690083b',
+                                 'port': 10000}}
+    All checks complete. Version v0.0.0-0-gdd5c1c2 is ready to go
 
 
+Setting up Digital Ocean
+========================
+
+*Tested with terraform == 0.6.15*
+
+First set up your digitalocean keys, and possibly a domain name::
+
+    cd ~/mgl-common/terraform/digitalocean
+    # create token in https://cloud.digitalocean.com/settings/api/tokens
+    echo 'do_token = "xxxyour_tokenxx"' > key.tfvars
+    # upload ssh key in https://cloud.digitalocean.com/settings/security
+    echo 'do_ssh_key = "12:34:56:78:9a:bc:de:f1"' >> key.tfvars
+    # optional public host (wildcard host should be configured)
+    echo 'public_host = "my.host.whatever"' >> key.tfvars
+
+Then just run our startup script::
+
+    ./start.sh
+
+This should ask your sudo password to connect to VPN, and finish with
+following::
+
+    Done. Now you can visit:
+    * http://h1.mglawica.org:8379/
+    * http://h1.mglawica.org:22682/
+    Or alternatively:
+    * http://172.24.0.1:8379/
+    * http://172.24.0.1:22682/
+    (note both access methods work only though VPN)
+    Next time you want to connect o VPN again run:
+      ./tink/start.sh
+    from current directory
+
+That's it for configuring VM.
+
+.. note:: Terraform writes state files directly into this directory, and
+   we write `tinc` keys here too. So you should keep this directory around.
+
+Now you can deploy your first project:
+
+
+.. code-block:: console
+
+    $ cd ~/mgl-hello
+    $ vagga barnard deploy
+        => git describe --match 'v[0-9]*' --dirty
+        => git rev-list HEAD
+    Application name: hello-world
+    Version: v0.0.0-0-gdd5c1c2
+    Deployment config: {'main': {'config': '/config/lithos.main.yaml',
+                                 'http-host': 'hello-world',
+                                 'image': '_deploy-py.b690083b',
+                                 'port': 10000}}
+        => rsync -rlp /target/_deploy-py/ rsync://172.24.0.1/images/hello-world/_deploy-py.tmp
+        .. done in 12 sec
+    Done v0.0.0-0-gdd5c1c2 App should be restarted shortly...
+    Service main is accessible at:
+    http://h1.mglawica.org:10000/ (VPN only)
+    http://hello-world.46.101.221.105.xip.io/
+    http://hello-world.h1.mglawica.org/
+
+
+Workflow
+========
+
+Usually when you change just sources of your project run:
+
+    vagga barnard deploy
+
+You should create a `git tag`_ for each of your deploy, so workflow should
+be rather this:
+
+    git commit
+    git tag -a v1.2.3
+    git push origin master v1.2.3
+    vagga barnard deploy
+
+If you change ``vagga.yaml`` you should re-check your files:
+
+    vagga barnard check -u
+    git commit vagga.yaml barnard vagga -m "Updated containers"
+    git tag -a v1.2.3
+    git push origin master v1.2.3
+    vagga barnard deploy
+
+
+Troubleshooting
+===============
+
+Here (VPN link) you can see the ports that applications occupy, in case
+you made a mistake:
+
+http://h1.mglawica.org:22682/local/users
+
+Here you can find logs of your application:
+
+http://h1.mglawica.org:8379/logs?filter=hello-world
+
+The interface is *super ugly* we are working on that. What you should know,
+that there are three logs for your service:
+
+* Log of verwalter generating configs for your service (container errors)
+* Log of container startup ``lithos/hello-world.log``
+* Log of container's own stdio ``lithos/stderr/hello-world.log``
+
+
+Maintenance
+===========
+
+**Connect to VPN** again, for example after system reboot::
+
+    cd ~/mgl-common
+    ./tinc/start.sh
+
+**SSH access**::
+
+    ssh root@h1.mglawica.org
+
+(you can probably also use public IP, you can look for it in
+``terraform.tfstate``)
+
+**Stopping a cluster**::
+
+    cd ~/mgl-common/terraform/digitalocean
+    terraform destroy -var-file=key.tfvars

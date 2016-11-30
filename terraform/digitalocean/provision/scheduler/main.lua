@@ -41,11 +41,10 @@ local function _scheduler(state)
                 metrics=split.metrics(state, role_name),
                 peers=state.peers,
                 now=state.now,
+                base_hosts=base_hosts,
             }
 
         end, state.runtime))
-
-    schedule['base_hosts'] = base_hosts
     return JSON:encode(schedule)
 end
 

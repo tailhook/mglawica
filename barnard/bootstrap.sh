@@ -12,7 +12,12 @@ stat -t vagga.yaml || fail "File vagga.yaml not found in current dira"
 set -e
 
 tmpdir=$(mktemp -d)
-trap "cd $tmpdir; vagga _clean --everything 2> /dev/null; cd /; rm -rf $tmpdir" EXIT
+
+cleanup() {
+    cd "$tmpdir"; vagga _clean --everything 2> /dev/null;
+    cd /; rm -rf "$tmpdir";
+}
+trap cleanup 0 3 15
 
 mkdir -p "$tmpdir/target/vagga"
 cp vagga.yaml "$tmpdir/target/vagga.yaml"
@@ -23,7 +28,7 @@ containers:
     setup:
     - !Tar
       url: http://localhost:8000/barnard-dev.tar.xz
-      sha256: 64ae7dca267a79dd13ceac25cccbc4787eec3b23d9d7ec762447b3e1254c97cf
+      sha256: 032eb1263a0a74c69f6fa5c853a8014d447b0684ceb9a9efe3e2ce607b313c51
 
 commands:
   barnard: !Command
@@ -57,6 +62,10 @@ echo
 
 "$VAGGA" barnard bootstrap < /dev/tty # || fail "Something wrong during bootstrap. You may wish to run it again (or use git)"
 
+echo
 echo 'Fine. You may want to commit now:'
 echo '  git add vagga/ vagga.yaml'
 echo '  git commit'
+echo 'Then run:'
+echo '  vagga barnard check -u'
+echo '  vagga barnard deploy'
