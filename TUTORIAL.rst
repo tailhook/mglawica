@@ -317,7 +317,7 @@ Maintenance
 
 **Connect to VPN** again, for example after system reboot::
 
-    cd ~/mgl-common
+    cd ~/mgl-common/terraform/digitalocean
     ./tinc/start.sh
 
 **SSH access**::
