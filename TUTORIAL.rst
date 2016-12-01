@@ -220,7 +220,10 @@ following::
       ./tink/start.sh
     from current directory
 
-That's it for configuring VM.
+That's it for configuring VM. The ``h1.mglawica.org`` hostname that we use
+use a lot in tutorial is not a public hostname and leads to an
+ip ``172.24.0.1`` which can't be used for internet. It only works for you
+when you are working through VPN.
 
 .. note:: Terraform writes state files directly into this directory, and
    we write `tinc` keys here too. So you should keep this directory around.
