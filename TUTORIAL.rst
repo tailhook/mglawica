@@ -257,19 +257,19 @@ inside the VPN.
 Workflow
 ========
 
-Usually when you change just sources of your project run:
+Usually when you change just sources of your project run::
 
     vagga barnard deploy
 
 You should create a `git tag`_ for each of your deploy, so workflow should
-be rather this:
+be rather this::
 
     git commit
     git tag -a v1.2.3
     git push origin master v1.2.3
     vagga barnard deploy
 
-If you change ``vagga.yaml`` you should re-check your files:
+If you change ``vagga.yaml`` you should re-check your files::
 
     vagga barnard check -u
     git commit vagga.yaml barnard vagga -m "Updated containers"
@@ -302,6 +302,10 @@ that there are three logs for your service:
 Here is a nice page with the list of your services:
 
 http://h1.mglawica.org:8379/services
+
+You can see which version is running and switch version here:
+
+http://h1.mglawica.org:8379/role/hello-world
 
 
 Maintenance
