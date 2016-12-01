@@ -1,4 +1,4 @@
 *.tfvars
 *.tfstate
 *.tfstate.backup
-tinc
+/tinc
