@@ -298,7 +298,8 @@ http://h1.mglawica.org:8379/logs?filter=hello-world
 The interface is *super ugly* we are working on that. What you should know,
 that there are three logs for your service:
 
-* Log of verwalter generating configs for your service (container errors)
+* Log of verwalter generating configs for your service
+  (basically should not crash)
 * Log of container startup ``lithos/hello-world.log``
 * Log of container's own stdio ``lithos/stderr/hello-world.log``
 
