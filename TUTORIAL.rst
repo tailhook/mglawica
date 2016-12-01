@@ -216,7 +216,7 @@ following::
     * http://172.24.0.1:8379/
     * http://172.24.0.1:22682/
     (note both access methods work only though VPN)
-    Next time you want to connect o VPN again run:
+    Next time you want to connect to VPN again run:
       ./tink/start.sh
     from current directory
 
