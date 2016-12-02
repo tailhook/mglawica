@@ -2,6 +2,8 @@
 Quick Start
 ===========
 
+**This manual is outdated use TUTORIAL.rst**
+
 This is rough instruction at current point in time. We will make it
 better, I promise!
 
