@@ -26,9 +26,6 @@ CONTAINER = """\
 auto-clean: true
 setup:
 - !*Unpack [!*Include "barnard.yaml"]
-- !EnsureDir "/target/py"
-volumes:
-  /target/py: !Container "py"
 """
 
 
